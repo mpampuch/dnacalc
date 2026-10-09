@@ -32,7 +32,7 @@ struct Cli {
     /// Force petabase pairs (Pbp).
     #[arg(short = 'p', short_alias = 'P', group = "unit")]
     pbp: bool,
-    
+
     /// Remove the space between the number and unit (e.g. 100Kbp).
     #[arg(short = 'n', long = "no-space")]
     no_space: bool,
@@ -122,9 +122,7 @@ fn parse_bases(input: &str) -> Result<u128, String> {
     let separator = separator.ok_or_else(invalid)?;
     let groups: Vec<&str> = input.split(separator).collect();
 
-    if groups[0].is_empty()
-        || groups[0].len() > 3
-        || !groups[0].bytes().all(|b| b.is_ascii_digit())
+    if groups[0].is_empty() || groups[0].len() > 3 || !groups[0].bytes().all(|b| b.is_ascii_digit())
     {
         return Err(invalid());
     }
@@ -144,8 +142,7 @@ fn decimal_exponent(bases: u128, divisor: u128) -> i32 {
         return 0;
     }
 
-    let mut exponent =
-        bases.to_string().len() as i32 - divisor.to_string().len() as i32;
+    let mut exponent = bases.to_string().len() as i32 - divisor.to_string().len() as i32;
 
     if exponent >= 0 {
         if bases < divisor * pow10(exponent as u32) {
@@ -219,10 +216,7 @@ fn format_value(bases: u128, divisor: u128, suffix: &str) -> String {
     format!("{formatted} {suffix}")
 }
 
-fn format_dna_length_with_unit(
-    input: &str,
-    forced_unit: Option<char>,
-) -> Result<String, String> {
+fn format_dna_length_with_unit(input: &str, forced_unit: Option<char>) -> Result<String, String> {
     let bases = parse_bases(input)?;
 
     if let Some(flag) = forced_unit {
@@ -269,7 +263,7 @@ fn format_output(result: &str, no_space: bool) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::format_dna_length_with_unit;
+    use super::{format_dna_length_with_unit, format_output};
 
     #[test]
     fn test_valid_number_formats() {
@@ -347,10 +341,7 @@ mod tests {
         ];
 
         for (input, expected) in cases {
-            assert_eq!(
-                format_dna_length_with_unit(input, None).unwrap(),
-                expected
-            );
+            assert_eq!(format_dna_length_with_unit(input, None).unwrap(), expected);
         }
     }
 
@@ -365,10 +356,7 @@ mod tests {
         ];
 
         for (input, expected) in cases {
-            assert_eq!(
-                format_dna_length_with_unit(input, None).unwrap(),
-                expected
-            );
+            assert_eq!(format_dna_length_with_unit(input, None).unwrap(), expected);
         }
     }
 
@@ -383,10 +371,7 @@ mod tests {
         ];
 
         for (input, expected) in cases {
-            assert_eq!(
-                format_dna_length_with_unit(input, None).unwrap(),
-                expected
-            );
+            assert_eq!(format_dna_length_with_unit(input, None).unwrap(), expected);
         }
     }
 
@@ -401,10 +386,7 @@ mod tests {
         ];
 
         for (input, expected) in cases {
-            assert_eq!(
-                format_dna_length_with_unit(input, None).unwrap(),
-                expected
-            );
+            assert_eq!(format_dna_length_with_unit(input, None).unwrap(), expected);
         }
     }
 
@@ -460,7 +442,7 @@ mod tests {
             "11_200_000",
             "11_200_000_000",
             "11_200_000_000_000",
-            "11_200_000_000_000_000"
+            "11_200_000_000_000_000",
         ];
 
         let flags = ['k', 'K', 'm', 'M', 'g', 'G', 't', 'T', 'p', 'P'];
@@ -481,8 +463,7 @@ mod tests {
                 .unwrap();
 
             for input in inputs {
-                let result =
-                    format_dna_length_with_unit(input, Some(flag)).unwrap();
+                let result = format_dna_length_with_unit(input, Some(flag)).unwrap();
 
                 let bases = super::parse_bases(input).unwrap();
                 let expected = super::format_value(bases, divisor, suffix);
@@ -497,14 +478,10 @@ mod tests {
 
     #[test]
     fn test_zero() {
-        assert_eq!(
-            format_dna_length_with_unit("0", None).unwrap(),
-            "0 bp"
-        );
+        assert_eq!(format_dna_length_with_unit("0", None).unwrap(), "0 bp");
 
         for flag in ['k', 'm', 'g', 't', 'p', 'K', 'M', 'G', 'T', 'P'] {
-            let result =
-                format_dna_length_with_unit("0", Some(flag)).unwrap();
+            let result = format_dna_length_with_unit("0", Some(flag)).unwrap();
 
             assert!(result.starts_with("0 "), "Flag: {flag}");
         }
@@ -512,10 +489,7 @@ mod tests {
 
     #[test]
     fn test_rejects_u128_overflow() {
-        assert!(
-            super::parse_bases("340282366920938463463374607431768211456")
-                .is_err()
-        );
+        assert!(super::parse_bases("340282366920938463463374607431768211456").is_err());
     }
 
     #[test]
@@ -531,9 +505,7 @@ mod tests {
 
     #[test]
     fn test_invalid_forced_unit() {
-        assert!(
-            format_dna_length_with_unit("11200", Some('x')).is_err()
-        );
+        assert!(format_dna_length_with_unit("11200", Some('x')).is_err());
     }
 
     #[test]
@@ -553,14 +525,14 @@ mod tests {
             );
         }
     }
-    
+
     #[test]
     fn test_output_with_space_by_default() {
         assert_eq!(format_output("100 Kbp", false), "100 Kbp");
         assert_eq!(format_output("11.2 Mbp", false), "11.2 Mbp");
         assert_eq!(format_output("42 bp", false), "42 bp");
     }
-    
+
     #[test]
     fn test_output_without_space() {
         assert_eq!(format_output("100 Kbp", true), "100Kbp");
@@ -568,29 +540,29 @@ mod tests {
         assert_eq!(format_output("42 bp", true), "42bp");
         assert_eq!(format_output("0 Pbp", true), "0Pbp");
     }
-    
+
     #[test]
     fn test_no_space_with_automatic_units() {
         let result = format_dna_length_with_unit("11200", None).unwrap();
         assert_eq!(format_output(&result, true), "11.2Kbp");
-    
+
         let result = format_dna_length_with_unit("11200000", None).unwrap();
         assert_eq!(format_output(&result, true), "11.2Mbp");
     }
-    
+
     #[test]
     fn test_no_space_with_forced_units() {
         let result = format_dna_length_with_unit("11200", Some('k')).unwrap();
         assert_eq!(format_output(&result, true), "11.2Kbp");
-    
+
         let result = format_dna_length_with_unit("11200", Some('m')).unwrap();
         assert_eq!(format_output(&result, true), "0.0112Mbp");
     }
-    
+
     #[test]
     fn test_no_space_does_not_change_numeric_formatting() {
         let result = format_dna_length_with_unit("999999", None).unwrap();
-    
+
         assert_eq!(format_output(&result, false), "1 Mbp");
         assert_eq!(format_output(&result, true), "1Mbp");
     }

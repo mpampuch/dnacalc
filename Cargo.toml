@@ -1,7 +1,17 @@
 [package]
 name = "dnacalc"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
+rust-version = "1.85"
+
+description = "Convert DNA and RNA base-pair counts into readable units"
+readme = "README.md"
+license = "MIT"
+repository = "https://github.com/mpampuch/dnacalc"
+homepage = "https://github.com/mpampuch/dnacalc"
+documentation = "https://docs.rs/dnacalc"
+keywords = ["dna", "rna", "bioinformatics", "cli"]
+categories = ["command-line-utilities", "science"]
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }
